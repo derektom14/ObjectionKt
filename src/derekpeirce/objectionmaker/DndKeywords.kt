@@ -2,8 +2,8 @@ package derekpeirce.objectionmaker
 
 import java.awt.Color
 import kotlin.random.Random
-import kotlin.time.milliseconds
-import kotlin.time.seconds
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class Spell(val name: String) {
     override fun toString() = color(name, Color.GREEN)
@@ -18,7 +18,9 @@ class Keyword(val name: String) {
 fun keyword(s: String) = Keyword(s)
 fun spell(s: String) = Spell(s)
 fun value(n: Int) = color(n.toString(), Color.ORANGE)
+fun damage(n: Int) = "${screenShake(300)}${Sound.DAMAGE2}${value(n)}"
 
+fun screenShake(n: Int) = "[#sm$n]"
 
 val combatStepByStep = keyword("Combat Step by Step")
 val chapterNineCombat = keyword("Chapter 9: Combat")
@@ -53,6 +55,7 @@ val perception = keyword("Perception")
 val daggerOfVenom = keyword("Dagger of Venom")
 val attackRoll = keyword("attack roll")
 val dexterity = keyword("Dexterity")
+val wisdom = keyword("Wisdom")
 val alert = keyword("Alert")
 val spells = keyword("spells")
 val opportunityAttack = keyword("opportunity attack")
@@ -69,6 +72,10 @@ val grapple = keyword("grapple")
 val attackAction = keyword("Attack action")
 val meleeAttack = keyword("melee attack")
 val see = keyword("see")
+val thief = keyword("Thief")
+val supremeSneak = keyword("Supreme Sneak")
+val capeMountebank = keyword("Cape of the Mountebank")
+val uncannyDodge = keyword("Uncanny Dodge")
 
 val d4 = keyword("d4")
 val d12 = keyword("d12")
@@ -100,6 +107,7 @@ val magical = keyword("magical")
 val nonmagical = keyword("nonmagical")
 val silvered = keyword("silvered")
 val silver = keyword("silver")
+val stealth = keyword("stealth")
 
 val eversmokingBottle = keyword("Eversmoking Bottle")
 
@@ -127,13 +135,27 @@ val disguiseSelf = spell("disguise self")
 val animateObjects = spell("animate objects")
 val conjureAnimals = spell("conjure animals")
 val fogCloud = spell("fog cloud")
-
+val invisibilitySpell = spell("invisibility")
+val command = spell("command")
+val seeInvisibility = spell("see invisibility")
+val dimensionDoor = spell("dimension door")
+val telepathicBond = spell("telepathic bond")
+val findSteed = spell("find steed")
+val phantomSteed = spell("phantom steed")
+val mistyStep = spell("misty step")
+val mindSliver = spell("mind sliver")
+val planarBinding = spell("planar binding")
+val glyphOfWarding = spell("glyph of warding")
+val magicCircle = spell("magic circle")
+val greaterInvisibility = spell("greater invisibility")
+val healingWord = spell("healing word")
 val savingThrow = keyword("saving throw")
 val savingThrows = keyword("saving throws")
 val saves = keyword("saves")
 val smallPause = pause(100.milliseconds)
 val pause = pause(500.milliseconds)
 val bigPause = pause(1.seconds)
+val summonFey = spell("Summon Fey")
 
 val random = Random(123456)
 

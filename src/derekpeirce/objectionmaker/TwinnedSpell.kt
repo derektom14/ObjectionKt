@@ -1,7 +1,7 @@
 package derekpeirce.objectionmaker
 
 import derekpeirce.objectionmaker.ObjectionMaker.Builder.Pearl
-import kotlin.time.milliseconds
+import kotlin.time.Duration.Companion.milliseconds
 
 fun main() {
     makeTrial(defaultTextSpeed = 26, tabPauseTime = 100.milliseconds) {
@@ -132,16 +132,6 @@ fun main() {
             edgeworth.confidentSmirk("${dragonsBreath.capitalize()} lets you power up a creature that is otherwise ineffective in combat,\t like a familiar.")
             edgeworth.confidentShrug("${keyword("Twinning")} $dragonsBreath onto two familiars would be far too powerful.")
             phoenix.deskSlam.objection("Creatures that have low attack power also tend to have low defense as well!\t\t The familiars can be destroyed in one attack each!")
-//            phoenix.confident("By converting spells to sorcery points, a twinned 2nd-level spell is equivalent to a 3rd-level spell.")
-//            edgeworth.armsCrossed("Oh? And which 3rd-level spell did you have in mind?")
-//            phoenix.read("Conjure animals! It would allow Pearl to summon eight wolves!")
-//            phoenix.read("Each flumph with dragon breath deals 3d6 damage to each creature in the cone, and with an average expectation of two creatures in range, that's an average of 21 damage on failed $saves.")
-//            edgeworth.deskSlam.objection("You can fit well over two creatures in a 15-foot cone! Why an average expectation of two?")
-//            phoenix.read.objection("The Dungeon Master's Guide, in the Monster Features table: $textSpeedRead\"For the purpose of determining effective damage output, assume the breath weapon hits two targets!\"")
-//            phoenix.deskSlam("Meanwhile, each wolf can use its bite attack for an expected 7 damage. That's a total of 56 damage, greater than the dragon's breath total of 42!")
-//            phoenix.point("And that's not even counting that the flumphs are two creatures to remove instead of eight and are sacrificing their own attacks, or that they only get the breath weapon for a minute instead of an hour!")
-//
-//            edgeworth.damage("Gah! Of course you chose one of the most powerful 3rd-level spells!")
         }
 
         playMusic(Music.TRUTH) {

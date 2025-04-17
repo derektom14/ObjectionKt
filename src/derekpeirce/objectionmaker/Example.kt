@@ -2,8 +2,8 @@ package derekpeirce.objectionmaker
 
 import java.awt.Color
 import kotlin.random.Random
-import kotlin.time.milliseconds
-import kotlin.time.seconds
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 
 fun main() {

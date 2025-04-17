@@ -1,7 +1,7 @@
 package derekpeirce.objectionmaker
 
-import kotlin.time.milliseconds
-import kotlin.time.seconds
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 fun main() {
     makeTrial(defaultTextSpeed = 23, tabPauseTime = 100.milliseconds) {

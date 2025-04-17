@@ -8,7 +8,7 @@ import java.awt.Color
 import java.io.File
 import java.util.*
 import kotlin.time.Duration
-import kotlin.time.milliseconds
+import kotlin.time.Duration.Companion.milliseconds
 
 interface PanelCreator {
     fun createPanel(
@@ -34,12 +34,23 @@ interface PanelCreator {
                 poseAnimation = args.animated,
                 bubbleType = args.bubble,
                 goNext = args.interrupted,
-                doNotTalk = args.doNotTalk,
+                doNotTalk = args.doNotTalk || (args.saidBy != null),
                 mergeNext = args.mergeNext,
-                username = username
+                username = args.saidBy ?: username,
+                blip = args.blip?.ordinal,
             )
         }
     }
+}
+
+enum class Blip {
+    DEFAULT,
+    MALE,
+    FEMALE,
+    TYPERWRITER,
+    ECHOING_BLIP,
+    KATONK,
+    MUTED,
 }
 
 data class ActionArgs(
@@ -47,7 +58,10 @@ data class ActionArgs(
     val animated: Boolean = true,
     val interrupted: Boolean = false,
     val doNotTalk: Boolean = false,
-    val mergeNext: Boolean = false
+    val mergeNext: Boolean = false,
+    val punctuation: PuncutationMode? = null,
+    val saidBy: String? = null,
+    val blip: Blip? = null,
 ) {
     companion object {
         val DEFAULT = ActionArgs()
@@ -98,7 +112,7 @@ class Action(
         builder.panels.add(
             panelCreator.createPanel(
                 id = builder.panels.size + 1,
-                text = music.orEmpty() + image.orEmpty() + defaultTextSpeed.orEmpty() + processText(text),
+                text = music.orEmpty() + image.orEmpty() + defaultTextSpeed.orEmpty() + processText(text, args.punctuation),
                 poseId = id,
                 args = args,
                 username = name.orEmpty()
@@ -106,17 +120,17 @@ class Action(
         )
     }
 
-    private fun processText(text: String): String {
-        return when (builder.punctuation) {
+    private fun processText(text: String, punctuation: PuncutationMode?): String {
+        return when (punctuation ?: builder.punctuation) {
             PuncutationMode.MANUAL -> text.replace("\t", pause(tabPauseTime))
             PuncutationMode.AUTO -> text
-                .replace(Regex("[.!?]+")) { it.groupValues[0] + pause(tabPauseTime*2) }
+                .replace(Regex("[.!?]+[\")♪]*")) { it.groupValues[0] + pause(tabPauseTime*2) }
                 .replace(Regex("[,]+")) { it.groupValues[0] + pause(tabPauseTime) }
                 .replace("\t", pause(tabPauseTime))
         }
     }
 
-    fun objection(text: String) = invoke(text, args = ActionArgs("1"))
+    fun objection(text: String, args: ActionArgs = ActionArgs()) = invoke(text, args.copy(bubble = "1"))
     fun holdIt(text: String) = invoke(text, args = ActionArgs("2"))
     fun takeThat(text: String) = invoke(text, args = ActionArgs("3"))
 
@@ -137,7 +151,7 @@ fun color(text: String, color: Color): String {
     return "[#/$colorString]$text[/#]"
 }
 fun textSpeed(speed: Int) = "[#ts$speed]"
-fun pause(pause: Duration) = "[#p${pause.inMilliseconds.toInt()}]"
+fun pause(pause: Duration) = "[#p${pause.inWholeMilliseconds}]"
 val flashSmall = "[#fs]"
 val flashMedium = "[#fm]"
 val flashBig = "[#fl]"
@@ -174,6 +188,7 @@ class Music(val n: Int) {
         val CONGRATULATIONS = Music(16)
         val CORNERED = Music(4)
         val CROSS_EXAMINING = Music(13)
+        val MAYA_FEY = Music(15)
         val MODERATO_2001 = Music(18)
         val OBJECTION = Music(14)
         val SUSPENSE = Music(65)
@@ -181,6 +196,12 @@ class Music(val n: Int) {
         val TRUTH = Music(17)
         val VON_KARMA = Music(287)
         val WILD_WEST = Music(40)
+        val WON_THE_CASE = Music(702)
+        val STEEL_SAMURAI = Music(704)
+        val STEEL_SAMURAI_RINGTONE = Music(4948)
+        val STEEL_SAMURAIS_BALLAD = Music(5345)
+        val PLEASE_LISTEN = Music(15570)
+        val PSYCHE_LOCK = Music(709)
     }
 
     override fun toString() = "[#bgm$n]"
@@ -235,6 +256,7 @@ class Sound(val n: Int) {
         val WHOOPS = Sound(1)
         val YELL = Sound(12)
         val YELL2 = Sound(13)
+        val POKEMON_CATCH = Sound(80152)
     }
 
     override fun toString() = "[#bgs$n]"
@@ -267,7 +289,7 @@ class ObjectionMaker(val frames: List<Panel>, val pairs: List<ActorPairData>, va
             imageState = ImageState.Stopping
         }
 
-        inner open class Actor(val characterId: Int, standId: Int, val name: String? = null) {
+        inner open class Actor(val characterId: Int?, standId: Int, val name: String? = null) {
             val stand = a(standId)
 
             internal fun a(id: Int) = action(id, name)
@@ -432,6 +454,37 @@ class ObjectionMaker(val frames: List<Panel>, val pairs: List<ActorPairData>, va
             val yell = a(275)
         }
 
+        inner class RonDeLite(name: String? = null): Actor(43, 331, name = name) {
+            val cornered = a(334)
+            val sad = a(333)
+            val serious = a(335)
+            val shout = a(336)
+            val shout2 = a(337)
+            val think = a(332)
+        }
+
+        inner class WinstonPayne(name: String? = null): Actor(6, 19, name = name) {
+            val confident = a(20)
+            val cornered = a(40)
+            val damage = a(190)
+            val damage2 = a(410)
+        }
+
+        inner class CodyHackins(name: String? = null): Actor(34, 276, name = name) {
+            val angry = a(283)
+            val confident = a(282)
+            val annoyed = a(277)
+            val cry = a(280)
+            val crying = a(281)
+            val happy = a(284)
+            val sad = a(279)
+            val surprised = a(278)
+        }
+
+        inner class Gallery(name: String? = null): Actor(null, 540, name = name) {
+
+        }
+
         inner class ActorPair<A1: Actor, A2: Actor>(
             private val actor1: A1,
             private val actor2: A2,
@@ -478,13 +531,14 @@ class ObjectionMaker(val frames: List<Panel>, val pairs: List<ActorPairData>, va
                                     poseId = poseId,
                                     pairPoseId = action2.id,
                                     bubbleType = args.bubble,
-                                    username = username,
-                                    doNotTalk = args.doNotTalk,
+                                    username = args.saidBy ?: username,
+                                    doNotTalk = args.doNotTalk || (args.saidBy != null),
                                     goNext = args.interrupted,
                                     poseAnimation = true,
                                     mergeNext = args.mergeNext,
                                     flipped = false,
-                                    pairId = pairId
+                                    pairId = pairId,
+                                    blip = args.blip?.ordinal,
                                 )
                             }
 
@@ -519,12 +573,13 @@ class ObjectionMaker(val frames: List<Panel>, val pairs: List<ActorPairData>, va
                                     poseId = poseId,
                                     pairPoseId = action1.id,
                                     bubbleType = args.bubble,
-                                    username = username,
-                                    doNotTalk = args.doNotTalk,
+                                    username = args.saidBy ?: username,
+                                    doNotTalk = args.doNotTalk || (args.saidBy != null),
                                     goNext = args.interrupted,
                                     poseAnimation = true,
                                     flipped = false,
-                                    pairId = pairId
+                                    pairId = pairId,
+                                    blip = args.blip?.ordinal,
                                 )
                             }
 
@@ -578,15 +633,16 @@ data class Panel(
     val mergeNext: Boolean = false,
     val doNotTalk: Boolean = false,
     val username: String = "",
-    val pairId: Int? = null
+    val pairId: Int? = null,
+    val blip: Int? = null,
 )
 
 data class ActorPairData(
     val id: Int = 0,
     val pairId: Int,
     val name: String,
-    val characterId: Int,
-    val characterId2: Int,
+    val characterId: Int?,
+    val characterId2: Int?,
     val offsetX: Int = -20,
     val offsetY: Int = 0,
     val offsetX2: Int = 20,
